@@ -5,6 +5,7 @@ require_relative "./app/actions/authenticate_user"
 require_relative "./app/actions/list_products"
 require_relative "./app/actions/create_product"
 require_relative "./app/actions/show_product"
+require_relative "./app/actions/get_job_status"
 
 set :port, 8080
 
@@ -53,12 +54,38 @@ get "/products" do
   { products: Actions::ListProducts.call }.to_json
 end 
 
-#Ruta de creación de productos
+#Ruta de creación de productos (asíncrona)
 post "/products" do
   authenticate_token
   content_type :json
-  status 200
-  { product: Actions::CreateProduct.call(JSON.parse(request.body.read)) }.to_json
+  
+  # Validar que el body no esté vacío
+  body_content = request.body.read
+  if body_content.nil? || body_content.strip.empty?
+    status 400
+    return { success: false, error: "Request body cannot be empty" }.to_json
+  end
+  
+  # Parsear el body JSON
+  begin
+    product_params = JSON.parse(body_content)
+  rescue JSON::ParserError => e
+    status 400
+    return { success: false, error: "Invalid JSON format: #{e.message}" }.to_json
+  end
+  
+  # Obtener delay del query parameter (opcional)
+  delay = params[:delay]&.to_i || 5
+  
+  result = Actions::CreateProduct.call(product_params, delay)
+  
+  if result[:success]
+    status 202 # Accepted - para operaciones asíncronas
+    result.to_json
+  else
+    status 400
+    result.to_json
+  end
 end
 
 # Ver producto por ID
@@ -72,6 +99,22 @@ get "/products/:id" do
   else
     status 404
     { message: "Product not found" }.to_json
+  end
+end
+
+# Ver estado de un job asíncrono
+get "/products/jobs/:job_id" do
+  authenticate_token
+  content_type :json
+  
+  result = Actions::GetJobStatus.call(params[:job_id])
+  
+  if result[:error]
+    status 404
+    result.to_json
+  else
+    status 200
+    result.to_json
   end
 end
 
