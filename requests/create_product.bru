@@ -1,10 +1,10 @@
 meta {
-  name: Create Product
+  name: Create Product (Async)
   type: http
   auth: bearer
 }
 
-post { url: http://localhost:8080/products
+post { url: http://localhost:8080/products?delay=10
   body: json
   auth: bearer
 }
@@ -17,6 +17,5 @@ body:json {
   {
     "name": "Example Product",
     "author": "{{username}}"
-
   }
 }
