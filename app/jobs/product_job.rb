@@ -71,7 +71,10 @@ module Jobs
           # Crear el producto en la base de datos
           product = Product.create!(job[:product_params])
           
-          # Marcar como completado
+          # Actualizar el status del producto a "completed"
+          product.update!(status: 'completed')
+          
+          # Marcar el job como completado
           @@jobs[job_id][:status] = 'completed'
           @@jobs[job_id][:product_id] = product.id
           @@jobs[job_id][:completed_at] = Time.current
