@@ -6,3 +6,11 @@ services:
       - "8080:8080"
     volumes:
       - ./db:/app/db
+
+  migrator:
+    build: .
+    volumes:
+      - ./db:/app/db
+    command: bundle exec rake db:migrate
+    depends_on:
+      - ruby_app # Asegurarse de que ruby_app esté listo si tiene dependencias externas (aunque sqlite es local)
