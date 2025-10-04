@@ -7,6 +7,7 @@ gem "dotenv"
 gem "activerecord"
 gem "sqlite3"
 gem "rake"
+gem "activesupport"
 gem "rspec", group: :test
 gem "rack-test", group: :test
 

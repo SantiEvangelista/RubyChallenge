@@ -2,6 +2,9 @@ require "sinatra"
 require "json"
 require "dotenv/load"
 require_relative "./app/actions/authenticate_user"
+require_relative "./app/actions/list_products"
+require_relative "./app/actions/create_product"
+require_relative "./app/actions/show_product"
 
 set :port, 8080
 
@@ -40,5 +43,35 @@ get "/test_auth" do
   { message: "Welcome, #{@current_user}! You are authenticated." }.to_json
 end
 
+# ---- Productos ----
 
+# Ver productos
+get "/products" do
+  authenticate_token
+  content_type :json
+  status 200
+  { products: Actions::ListProducts.call }.to_json
+end 
+
+#Ruta de creación de productos
+post "/products" do
+  authenticate_token
+  content_type :json
+  status 200
+  { product: Actions::CreateProduct.call(JSON.parse(request.body.read)) }.to_json
+end
+
+# Ver producto por ID
+get "/products/:id" do
+  authenticate_token
+  content_type :json
+  product = Actions::ShowProduct.call(params[:id])
+  if product
+    status 200
+    { product: product }.to_json
+  else
+    status 404
+    { message: "Product not found" }.to_json
+  end
+end
 
