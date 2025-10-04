@@ -1,0 +1,22 @@
+meta {
+  name: Create Product
+  type: http
+  auth: bearer
+}
+
+post { url: http://localhost:8080/products
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "Example Product",
+    "author": "{{username}}"
+
+  }
+}
