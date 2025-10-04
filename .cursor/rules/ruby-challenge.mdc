@@ -1,0 +1,44 @@
+---
+description: Develop this proyect
+alwaysApply: false
+---
+    enforce:
+      - require_file: ".github/workflows/ci.yml"
+      - suggest:
+          message: |
+            CI should run:
+              - bundle install
+              - rake db:create db:migrate
+              - bundle exec rspec
+
+auto_actions:
+  # Generadores rápidos que Cursor puede ejecutar al detectar un trigger
+  - id: generate_action_and_spec
+    when: "user_invokes_generate_action"
+    params:
+      name: "{{name}}"
+    run:
+      - create_file: "app/actions/{{name}}_action.rb"
+        template: |
+          class {{camel_case_name}}Action
+            def initialize(params = {})
+              @params = params
+            end
+
+            def call
+              # TODO: implementar
+            end
+          end
+      - create_file: "spec/actions/{{name}}_action_spec.rb"
+        template: |
+          require 'spec_helper'
+          RSpec.describe {{camel_case_name}}Action do
+            it "works (write real specs)" do
+              expect(true).to be true
+            end
+          end
+
+notes:
+  - "Esta regla está pensada para ejecutarse solo en el equipo local (paths)."
+  - "Si querés que algunas comprobaciones sean `warn` en lugar de `error`, cambia el campo `level`."
+  - "Para activar los generadores automáticos, usá el comando de Cursor: `cursor generate action --name my_action` (o similar si tu instalación soporta auto_actions)."
