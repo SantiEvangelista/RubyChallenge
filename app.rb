@@ -9,6 +9,26 @@ require_relative "./app/actions/get_job_status"
 
 set :port, 8080
 
+# Configurar archivos estáticos
+set :public_folder, File.dirname(__FILE__) + '/public'
+
+# ---- Archivos estáticos con headers de caché ----
+
+# openapi.yaml - NO debe cachearse
+get '/openapi.yaml' do
+  content_type 'application/x-yaml'
+  cache_control :no_cache, :no_store, :must_revalidate
+  headers 'Pragma' => 'no-cache', 'Expires' => '0'
+  send_file File.join(settings.public_folder, 'openapi.yaml')
+end
+
+# AUTHORS - debe cachearse por 24 horas
+get '/AUTHORS' do
+  content_type 'text/plain'
+  cache_control :public, max_age: 86400  # 86400 segundos = 24 horas
+  send_file File.join(settings.public_folder, 'AUTHORS')
+end
+
 # Helper to authenticate JWT tokens
 def authenticate_token
   halt 401, { message: "No token provided" }.to_json unless request.env["HTTP_AUTHORIZATION"]
