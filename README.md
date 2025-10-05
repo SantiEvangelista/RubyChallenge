@@ -9,9 +9,9 @@ API REST desarrollada con Ruby/Sinatra que implementa un sistema de gestión de 
 ## 📋 Tabla de Contenidos
 
 - [Descripción](#-descripción)
+- [Instalación](#-instalación)
 - [Arquitectura](#-arquitectura)
 - [Tecnologías Utilizadas](#-tecnologías-utilizadas)
-- [Instalación](#-instalación)
 
 ---
 
@@ -26,6 +26,33 @@ Esta API implementa un sistema completo de gestión de productos con las siguien
 - **Caché Inteligente**: Headers de caché configurados según especificaciones
 
 ---
+
+## 🚀 Instalación
+
+### Opción 1: Docker  - Un solo comando
+
+Esta es la forma más rápida de empezar. Con un solo comando se realizan automáticamente:
+- Build del contenedor
+- Instalación de dependencias
+- Ejecución de migraciones
+- Carga de datos de prueba (seeds)
+- Inicio del servidor
+
+```bash
+# Clonar el repositorio
+git clone <repository-url>
+cd RubyChallenge
+
+# Levantar todo con un solo comando
+docker-compose up --build
+
+# La API estará disponible en http://localhost:8080
+```
+
+Para detener:
+```bash
+docker-compose down
+```
 
 ## 🏗️ Arquitectura
 
@@ -140,33 +167,6 @@ Colección completa de requests HTTP para testing manual:
 - **OpenAPI 3.0**: Especificación estándar de la API
 
 ---
-
-## 🚀 Instalación
-
-### Opción 1: Docker (Recomendado) - UN SOLO COMANDO
-
-Esta es la forma más rápida de empezar. Con un solo comando se realizan automáticamente:
-- Build del contenedor
-- Instalación de dependencias
-- Ejecución de migraciones
-- Carga de datos de prueba (seeds)
-- Inicio del servidor
-
-```bash
-# Clonar el repositorio
-git clone <repository-url>
-cd RubyChallenge
-
-# Levantar todo con un solo comando
-docker-compose up --build
-
-# La API estará disponible en http://localhost:8080
-```
-
-Para detener:
-```bash
-docker-compose down
-```
 
 
 ## 👤 Contacto
