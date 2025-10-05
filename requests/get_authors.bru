@@ -1,0 +1,16 @@
+meta {
+  name: Get AUTHORS
+  type: http
+  auth: none
+}
+
+get {
+  url: {{BASE_URL}}/AUTHORS
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.headers.cache-control: contains max-age=86400
+}

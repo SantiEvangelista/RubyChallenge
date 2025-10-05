@@ -1,0 +1,16 @@
+meta {
+  name: Get OpenAPI Spec
+  type: http
+  auth: none
+}
+
+get {
+  url: {{BASE_URL}}/openapi.yaml
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.headers.cache-control: contains no-cache
+}
