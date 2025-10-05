@@ -56,12 +56,12 @@ docker-compose down
 
 ## 🏗️ Arquitectura
 
-El proyecto sigue una arquitectura modular y escalable basada en el patrón **Service Object** (Actions), con clara separación de responsabilidades:
+El proyecto sigue una arquitectura modular y escalable basada en el **Action Pattern** (también conocido como **Command Pattern**), con clara separación de responsabilidades:
 
 ```
 RubyChallenge/
 ├── app/
-│   ├── actions/          # Service Objects - Lógica de negocio
+│   ├── actions/          # Actions (Command Pattern) - Lógica de negocio
 │   │   ├── authenticate_user.rb
 │   │   ├── create_product.rb
 │   │   ├── list_products.rb
@@ -89,7 +89,7 @@ RubyChallenge/
 
 ### Principios de Arquitectura
 
-#### 1. **Actions (Service Objects)**
+#### 1. **Actions (Command Pattern)**
 Cada funcionalidad de negocio está encapsulada en una clase Action con un método `call` estático. Esto proporciona:
 - **Single Responsibility**: Cada action tiene una única responsabilidad
 - **Testabilidad**: Fácil de testear de forma aislada
