@@ -1,10 +1,10 @@
 meta {
-  name: Get Job Status
+  name: Show Product by ID
   type: http
   auth: bearer
 }
 
-get { url: http://localhost:8080/products/jobs/{{job_id}}
+get { url: {{base_url}}/products/1
   body: none
   auth: bearer
 }

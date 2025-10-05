@@ -4,7 +4,8 @@ meta {
   auth: bearer
 }
 
-post { url: http://localhost:8080/products?delay=10
+post { 
+  url: {{base_url}}/products?delay=10
   body: json
   auth: bearer
 }
