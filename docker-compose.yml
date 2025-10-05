@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   ruby_app:
     build: .
@@ -6,11 +5,12 @@ services:
       - "8080:8080"
     volumes:
       - ./db:/app/db
-
-  migrator:
-    build: .
-    volumes:
-      - ./db:/app/db
-    command: bundle exec rake db:migrate
-    depends_on:
-      - ruby_app # Asegurarse de que ruby_app esté listo si tiene dependencias externas (aunque sqlite es local)
+    command: >
+      sh -c "
+        echo '⚙️  Running migrations...' &&
+        bundle exec rake db:migrate &&
+        echo '🌱 Running seeds...' &&
+        bundle exec rake db:seed &&
+        echo '🚀 Starting server...' &&
+        bundle exec rackup --port 8080 --host 0.0.0.0
+      "
