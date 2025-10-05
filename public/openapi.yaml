@@ -1,0 +1,375 @@
+openapi: 3.0.3
+info:
+  title: Ruby Challenge API
+  description: |
+    API REST implementada en Ruby con Sinatra que expone endpoints para autenticación JWT 
+    y gestión asíncrona de productos.
+  version: 1.0.0
+  contact:
+    name: Santiago Evangelista
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor de desarrollo local
+
+tags:
+  - name: Authentication
+    description: Endpoints de autenticación y autorización
+  - name: Products
+    description: Endpoints para gestión de productos
+  - name: Jobs
+    description: Endpoints para consultar estado de tareas asíncronas
+
+paths:
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: Autenticar usuario y obtener token JWT
+      description: Valida credenciales de usuario y retorna un token JWT para autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  format: password
+                  example: secret
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    example: granted
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiJ9...
+        '401':
+          description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /test_auth:
+    get:
+      tags:
+        - Authentication
+      summary: Verificar token JWT
+      description: Endpoint de prueba para verificar que el token JWT es válido
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Token válido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Welcome, admin! You are authenticated.
+        '401':
+          description: Token inválido o no proporcionado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products:
+    get:
+      tags:
+        - Products
+      summary: Listar todos los productos
+      description: Retorna una lista de todos los productos en la base de datos
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Products
+      summary: Crear producto de forma asíncrona
+      description: |
+        Crea un producto de forma asíncrona. El producto no se crea inmediatamente, 
+        sino después de un delay especificado (default 5 segundos, máximo 120 segundos).
+        Retorna un job_id para consultar el estado de la creación.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: delay
+          in: query
+          description: Tiempo de espera en segundos antes de crear el producto (1-120)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 120
+            default: 5
+            example: 10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - author
+              properties:
+                name:
+                  type: string
+                  example: Laptop Dell XPS 15
+                author:
+                  type: string
+                  example: Admin
+      responses:
+        '202':
+          description: Job de creación aceptado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '400':
+          description: Datos inválidos o body vacío
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Obtener producto por ID
+      description: Retorna los detalles de un producto específico
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del producto
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: '#/components/schemas/Product'
+        '404':
+          description: Producto no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Product not found
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products/jobs/{job_id}:
+    get:
+      tags:
+        - Jobs
+      summary: Consultar estado de job de creación de producto
+      description: |
+        Consulta el estado de un job asíncrono de creación de producto.
+        Estados posibles: pending, processing, completed, failed.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          description: UUID del job
+          schema:
+            type: string
+            format: uuid
+            example: 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        '200':
+          description: Estado del job
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '404':
+          description: Job no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Job not found
+        '401':
+          description: No autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token JWT obtenido del endpoint /login
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Laptop Dell XPS 15
+        author:
+          type: string
+          example: Admin
+        date_published:
+          type: string
+          format: date-time
+          description: Timestamp de cuando se envió la request de creación
+          example: 2025-10-04T22:00:00.000Z
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          example: completed
+        created_at:
+          type: string
+          format: date-time
+          description: Timestamp de cuando realmente se creó en la base de datos
+          example: 2025-10-04T22:00:05.000Z
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-10-04T22:00:05.000Z
+
+    JobResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        job_id:
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+        status:
+          type: string
+          enum: [pending]
+          example: pending
+        estimated_completion:
+          type: string
+          format: date-time
+          example: 2025-10-04T22:00:10.000Z
+        delay_seconds:
+          type: integer
+          example: 10
+
+    JobStatus:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          example: completed
+        created_at:
+          type: string
+          format: date-time
+          example: 2025-10-04T22:00:00.000Z
+        estimated_completion:
+          type: string
+          format: date-time
+          example: 2025-10-04T22:00:10.000Z
+        delay_seconds:
+          type: integer
+          example: 10
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: No token provided
+        access:
+          type: string
+          example: denied
+        error:
+          type: string
+          example: Invalid credentials
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: string
+          example: ["Name can't be blank", "Author can't be blank"]
+        error:
+          type: string
+          example: Request body cannot be empty
