@@ -2,6 +2,14 @@
 require 'rake'
 require_relative './config/environment'
 
+# Load Rswag rake tasks
+begin
+  require 'rswag/specs/rake_task'
+  RSwag::Specs::RakeTask.new('rswag:specs:swaggerize')
+rescue LoadError
+  # Rswag not available
+end
+
 # Ensure ActiveRecord is loaded and connected for Rake tasks
 
 namespace :db do
@@ -44,5 +52,32 @@ namespace :db do
   task :seed => :create do # Ensure db exists before seeding
     require_relative './db/seeds.rb' if File.exist?('./db/seeds.rb')
     puts "Seed data loaded."
+  end
+end
+
+namespace :api do
+  desc "Generate API documentation from Rswag specs"
+  task :docs do
+    puts "Generating API documentation with Rswag..."
+    Rake::Task['rswag:specs:swaggerize'].invoke
+    
+    # Copy generated swagger to public folder for easy access
+    source = File.join('swagger', 'v1', 'swagger.yaml')
+    destination = File.join('public', 'openapi.yaml')
+    
+    if File.exist?(source)
+      FileUtils.cp(source, destination)
+      puts "Documentation generated successfully!"
+      puts "✓ Swagger file: #{source}"
+      puts "✓ Public file: #{destination}"
+    else
+      puts "Warning: Swagger file not found at #{source}"
+    end
+  end
+  
+  desc "Generate and view API documentation"
+  task :docs_view => :docs do
+    puts "\nYou can now view the documentation at:"
+    puts "http://localhost:8080/openapi.yaml"
   end
 end
