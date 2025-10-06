@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Ruby Challenge API
+  title: FUDO - Ruby Challenge API by Santiago Evangelista
   description: |
     API REST implementada en Ruby con Sinatra que expone endpoints para autenticación JWT 
     y gestión asíncrona de productos.
@@ -359,4 +359,51 @@ components:
           type: integer
           example: 10
 
-    
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: No token provided
+      description: Error de autenticación estándar
+
+    LoginErrorResponse:
+      type: object
+      properties:
+        access:
+          type: string
+          example: denied
+        error:
+          type: string
+          example: Invalid credentials
+      required:
+        - access
+        - error
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        errors:
+          type: array
+          items:
+            type: string
+          example: ["Name can't be blank", "Author can't be blank"]
+      required:
+        - success
+        - errors
+
+    EmptyBodyErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Request body cannot be empty
+      required:
+        - success
+        - error

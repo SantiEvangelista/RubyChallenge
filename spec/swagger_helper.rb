@@ -12,7 +12,7 @@ RSpec.configure do |config|
     'v1/swagger.yaml' => {
       openapi: '3.0.3',
       info: {
-        title: 'Ruby Challenge API - By Santiago Evangelista',
+        title: 'FUDO - Ruby Challenge API by Santiago Evangelista',
         version: 'v1',
         description: 'API REST implementada en Ruby con Sinatra que expone endpoints para autenticación JWT y gestión asíncrona de productos.',
         contact: {
