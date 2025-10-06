@@ -1,7 +1,6 @@
 require "sinatra"
 require "sinatra/json"
 require "json"
-require "dotenv/load"
 require_relative "./app/actions/authenticate_user"
 require_relative "./app/actions/list_products"
 require_relative "./app/actions/create_product"
@@ -145,4 +144,3 @@ get "/products/jobs/:job_id" do
     result.to_json
   end
 end
-

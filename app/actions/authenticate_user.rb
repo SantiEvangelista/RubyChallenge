@@ -1,6 +1,5 @@
 # app/actions/authenticate_user.rb
 require 'jwt'
-require 'dotenv/load'
 
 module Actions
   class AuthenticateUser

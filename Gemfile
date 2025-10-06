@@ -3,7 +3,6 @@ gem "sinatra"
 gem "puma"
 gem "rackup"
 gem "jwt"
-gem "dotenv"
 gem "activerecord"
 gem "sqlite3"
 gem "rake"
@@ -16,4 +15,3 @@ group :test do
   gem "rswag"
   gem "rswag-specs"
 end
-
