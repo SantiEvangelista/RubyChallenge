@@ -1,11 +1,14 @@
 require "sinatra"
 require "sinatra/json"
 require "json"
+require "rack/deflater"
 require_relative "./app/actions/authenticate_user"
 require_relative "./app/actions/list_products"
 require_relative "./app/actions/create_product"
 require_relative "./app/actions/show_product"
 require_relative "./app/actions/get_job_status"
+
+use Rack::Deflater
 
 set :port, 8080
 
