@@ -1,4 +1,5 @@
 require "sinatra"
+require "sinatra/json"
 require "json"
 require "dotenv/load"
 require_relative "./app/actions/authenticate_user"
@@ -11,6 +12,7 @@ set :port, 8080
 
 # Configurar archivos estáticos
 set :public_folder, File.dirname(__FILE__) + '/public'
+set :static, true
 
 # ---- Archivos estáticos con headers de caché ----
 
@@ -27,6 +29,12 @@ get '/AUTHORS' do
   content_type 'text/plain'
   cache_control :public, max_age: 86400  # 86400 segundos = 24 horas
   send_file File.join(settings.public_folder, 'AUTHORS')
+end
+
+# Interfaz visual para la documentación en la raiz
+get '/' do
+  content_type 'text/html'
+  erb :swagger_ui
 end
 
 # Helper to authenticate JWT tokens
