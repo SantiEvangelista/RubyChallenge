@@ -1,3 +1,7 @@
+https://s5.ezgif.com/tmp/ezgif-59885407ab6a68.gif<img width="800" height="371" alt="image" src="https://github.com/user-attachments/assets/82761eb2-d0ef-4340-b035-872120cb9898" />
+<img width="1906" height="884" alt="image" src="https://github.com/user-attachments/assets/ad4733d7-1ea4-4a1c-8dd1-9bc7a446e403" />
+
+
 # Ruby Challenge - API REST Asíncrona
 
 API REST desarrollada con Ruby/Sinatra que implementa un sistema de gestión de productos con creación asíncrona, autenticación JWT , pruebas con Spec y documentación OpenAPI.
